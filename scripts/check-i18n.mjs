@@ -37,6 +37,12 @@ expectEnglish('README.md', read('README.md'))
 expectChinese('README.zh.md', read('README.zh.md'))
 expectEnglish('docs/CHANGELOG.md', read('docs/CHANGELOG.md'))
 expectChinese('docs/CHANGELOG.zh.md', read('docs/CHANGELOG.zh.md'))
+expectEnglish('docs/en/rules.md', read('docs/en/rules.md'))
+expectEnglish('docs/en/memory-sync.md', read('docs/en/memory-sync.md'))
+expectEnglish('docs/en/coi-scheduling.md', read('docs/en/coi-scheduling.md'))
+expectChinese('docs/rules.md', read('docs/rules.md'))
+expectChinese('docs/COI-调度.md', read('docs/COI-调度.md'))
+expectChinese('docs/记忆同步.md', read('docs/记忆同步.md'))
 if (!existsSync(resolve(root, 'docs/en/setup.md'))) problems.push('missing docs/en/setup.md')
 
 const savedLocale = process.env.DSH_LOCALE

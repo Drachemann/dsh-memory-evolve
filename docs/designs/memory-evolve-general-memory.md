@@ -1260,6 +1260,6 @@ Two documentation blocks (the i18n header and `splitEntryHead`'s target list) st
 
 **Evidence.** `npm test` → **912 pass, 0 fail**. New suites: `episodes` 7/7, `episodes-store` 6/6 (three consecutive runs), `episodes-approval` 6/6, `i18n-docs` 1/1. The previously failing `update`, `i18n` and `search-docs` suites are green.
 
-**Ship.** Not entered. The working tree is uncommitted on `main` and the objective forbids a commit without an explicit request. Commit/push is the one remaining gate.
+**Ship.** Landed on `feat/english-first-episode-memory` (commit `358154d`), based on `origin/main` and pushed over SSH. The PR is opened by the user because `gh` is not authenticated. The three operating-doc translations were written after that commit and remain uncommitted.
 
-**Remaining first-release work.** English versions of `docs/rules.md`, `docs/COI-调度.md`, `docs/记忆同步.md`; the Flows sub-tab; the Phase 3 index. The episode backend and its fixtures are ready for the index/scorer.
+**Remaining first-release work.** The Flows sub-tab and the Phase 3 index. The operating docs now have English versions at `docs/en/rules.md`, `docs/en/memory-sync.md` and `docs/en/coi-scheduling.md`, and `npm run check:i18n` covers all six. The episode backend and its fixtures are ready for the index/scorer.

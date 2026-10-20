@@ -5,6 +5,8 @@
 > 本指南按真实工作流组织，每个场景讲「适合谁、能做什么、怎么用、会得到什么」。
 >
 > 相关文档：[详细功能说明](README-详细说明.md) · [记忆同步](docs/记忆同步.md) · [更新日志](docs/CHANGELOG.zh.md) · [English](README.md)
+>
+> **状态说明**：本项目使用 DeepSeek Harness 与 Drache Technik 插件栈/agent 模式（Creator Enhanced）构建。作者已在日常使用，但尚未经过完整的人工审查——审查计划在时间允许时进行。当前是「正在使用」状态，而非「已人工审计」。
 
 ---
 

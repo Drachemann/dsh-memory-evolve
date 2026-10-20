@@ -4,7 +4,9 @@
 >
 > This guide is organized around real workflows. Each scenario explains "who it's for, what it can do, how to use it, and what you get."
 >
-> Related docs: [Detailed feature guide](README-详细说明.md) · [Memory sync](docs/记忆同步.md) · [Changelog](docs/CHANGELOG.md) · [中文](README.zh.md)
+> Related docs: [Detailed feature guide (Chinese)](README-详细说明.md) · [Rules](docs/en/rules.md) · [Memory sync](docs/en/memory-sync.md) · [COI scheduling](docs/en/coi-scheduling.md) · [Changelog](docs/CHANGELOG.md) · [中文](README.zh.md)
+>
+> **Status:** This project was built with DeepSeek Harness and the Drache Technik plugin stack/agent mode (Creator Enhanced). It is in active use by the author, but it has not yet received a thorough human review — that review is planned when time allows. Treat it as actively used, not as human-audited.
 
 ---
 
