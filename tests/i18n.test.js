@@ -24,7 +24,7 @@ import {
   getLocale,
   translate,
 } from '../lib/i18n.js'
-import { MemoryStore } from '../lib/store.js'
+import { MemoryStore, todayStamp } from '../lib/store.js'
 import { memoryTool, renderSnapshot, resolveConfig } from '../lib/index.js'
 import { reviewStatusTool, suggestToolDefinition, reviewTurnCounter } from '../lib/review.js'
 import { todoToolDefinition, TodoStore } from '../lib/todo.js'
@@ -72,15 +72,16 @@ test('translate substitutes {name} params and falls back to the key when missing
   assert.equal(translate(dict, 'k.hello', { other: 1 }, 'en'), 'Hello {name}')
 })
 
-test('resolveLocale: en only when DSH Language preference is explicitly en; legacy default stays zh', async () => {
+test('resolveLocale: explicit preference wins; auto follows the system; unset defaults to en', async () => {
   const makeCtx = (section) => ({
     get: (name) => (name === 'settings' ? { get: (ns) => (ns === 'locale' ? section : undefined) } : undefined),
   })
   setLocale('en') // reset singleton to the plugin default
   assert.deepEqual(LOCALES, ['zh', 'en'])
-  assert.equal(resolveLocale(undefined), 'zh', 'no settings service → default zh')
-  assert.equal(resolveLocale(makeCtx(undefined)), 'zh', 'settings without a locale section → zh')
-  assert.equal(resolveLocale(makeCtx({ preference: 'auto' })), 'zh', 'auto → zh')
+  const system = String(Intl.DateTimeFormat().resolvedOptions().locale).toLowerCase().startsWith('zh') ? 'zh' : 'en'
+  assert.equal(resolveLocale(undefined), 'en', 'no settings service → default en')
+  assert.equal(resolveLocale(makeCtx(undefined)), 'en', 'settings without a locale section → en')
+  assert.equal(resolveLocale(makeCtx({ preference: 'auto' })), system, 'auto → system locale')
   assert.equal(resolveLocale(makeCtx({ preference: 'zh' })), 'zh', 'explicit zh → zh')
   assert.equal(resolveLocale(makeCtx({ preference: 'en' })), 'en', 'explicit en → en')
 })
@@ -150,14 +151,14 @@ test('feedback line renders in both locales', async () => {
     { action: 'add', target: 'daily', content: 'shipped the parser', feedback: { sentiment: 'positive', category: 'Coding/Backend', quote: 'great work!', note: 'clean fix' } },
     fakeExec(),
   )
-  const daily = readFileSync(join(config.memoryDir, `daily/${new Date().toISOString().slice(0, 10)}.md`), 'utf8')
+  const daily = readFileSync(join(config.memoryDir, `daily/${todayStamp()}.md`), 'utf8')
   assert.ok(daily.includes('[Feedback]sentiment:positive | category:Coding/Backend | quote:"great work!" | note:clean fix'), daily)
   setLocale('zh')
   await tool.execute(
     { action: 'add', target: 'daily', content: 'hoàn tất parser', feedback: { sentiment: 'negative', category: '编程/后端' } },
     fakeExec(),
   )
-  const dailyZh = readFileSync(join(config.memoryDir, `daily/${new Date().toISOString().slice(0, 10)}.md`), 'utf8')
+  const dailyZh = readFileSync(join(config.memoryDir, `daily/${todayStamp()}.md`), 'utf8')
   assert.ok(dailyZh.includes('【反馈】情绪:负面 | 分类:编程/后端'), dailyZh)
   clean(dir)
 })

@@ -64,8 +64,8 @@ test('defaultRoots：始终包含主目录；darwin 包含 /Volumes', () => {
   const roots = defaultRoots('darwin')
   assert.ok(roots.length >= 1)
   assert.ok(roots.includes(homedir()))
-  // darwin 上真实 /Volumes 存在
-  assert.ok(existsSync('/Volumes'))
+  // darwin 上真实 /Volumes 存在；Linux 上该路径本来就不存在
+  if (process.platform === 'darwin') assert.ok(existsSync('/Volumes'))
   const winRoots = defaultRoots('win32')
   // PR #32（全盘搜索卡死修复）：win32 只收集「探测存在」的盘符——home 所在
   // 盘只扫 homedir（不含 C:\Windows 等系统目录），其余盘加盘符根。macOS
@@ -73,14 +73,18 @@ test('defaultRoots：始终包含主目录；darwin 包含 /Volumes', () => {
   assert.ok(winRoots.length === 0 || winRoots.includes(homedir()))
 })
 
-test('resolveProviders：auto 按平台排序并探测（本机 darwin → mdfind 优先）', () => {
+test('resolveProviders：auto 按平台排序并探测（本机可用 provider 优先）', () => {
   const chain = resolveProviders(baseConfig(), 'darwin')
   const names = chain.map((p) => p.name)
-  assert.ok(names[0] === 'mdfind', `期望 mdfind 优先，实际 ${names.join(',')}`)
-  assert.ok(names.includes('walk'))
-  // 显式顺序
+  // mdfind 只在真正安装了 Spotlight 的 macOS 上可用；其它平台会探测失败
+  // 并降级到 rg/walk（本机 Linux 没有 mdfind 与 rg，只剩 walk）。
+  assert.ok(names.includes('walk'), `期望包含 walk，实际 ${names.join(',')}`)
+  if (process.platform === 'darwin') assert.ok(names[0] === 'mdfind', `期望 mdfind 优先，实际 ${names.join(',')}`)
+  // 显式顺序：不可用的 provider 会被探测过滤，walk 永远保留。
   const explicit = resolveProviders(baseConfig({ searchDocsProviders: ['rg', 'walk'] }), 'darwin')
-  assert.deepEqual(explicit.map((p) => p.name), ['rg', 'walk'])
+  const explicitNames = explicit.map((p) => p.name)
+  assert.ok(explicitNames.every((name) => ['rg', 'walk'].includes(name)))
+  assert.equal(explicitNames.at(-1), 'walk')
   // 未知 provider 报错
   assert.throws(() => resolveProviders(baseConfig({ searchDocsProviders: ['nope'] }), 'darwin'))
 })
@@ -219,7 +223,7 @@ test('控制器：启用注册、禁用注销、状态', () => {
   assert.equal(registered?.name, 'memory_evolve_search_local_files', '启用后注册工具')
   const status = ctrl.status()
   assert.equal(status.enabled, true)
-  assert.deepEqual(status.providers, ['mdfind', 'rg', 'walk'])
+  assert.deepEqual(status.providers, resolveProviders(baseConfig()).map((p) => p.name))
   enabled = false
   ctrl.sync()
   assert.equal(registered, null, '禁用后注销工具')

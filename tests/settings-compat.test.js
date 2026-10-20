@@ -126,6 +126,6 @@ test('resolveLocale reads the new describe() shape and still understands the leg
   const unsetCtx = { get: (key) => (key === 'settings' ? describeService({ locale: {} }) : undefined) }
   assert.equal(resolveLocale(newCtx), 'en')
   assert.equal(resolveLocale(oldCtx), 'en')
-  assert.equal(resolveLocale(unsetCtx), 'zh', 'unset preference keeps the historical Chinese default')
-  assert.equal(resolveLocale({}), 'zh')
+  assert.equal(resolveLocale(unsetCtx), 'en', 'unset preference defaults to en')
+  assert.equal(resolveLocale({}), 'en')
 })
