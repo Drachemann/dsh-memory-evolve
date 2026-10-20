@@ -8,6 +8,7 @@ All version changes for this repository, in reverse chronological order.
 
 ### Added
 
+- **Flows curation surface.** The Memory tab gains a Flows sub-tab backed by `GET /api/flows` (global/project episodes, pattern notes, pending proposals, index status). It supports project/branch/pattern/confidence filters with removable chips, a master-detail view with History and Why recalled, pending proposal edit/approve/reject, confirmed-flow revise (superseding episode) and archive to `EPISODES-archive.md`, plus loading/empty/error/partial states and a collapsible index footer. The client bundle is rebuilt; 917 tests pass.
 - **Episode memory backend.** `EPISODES.md` uses the existing entry format with an `episode` target; `lib/episodes.js` owns parsing, validation, the `sha256(pattern + "\n" + normalize(goal))` dedup key, the 200-entry archive cap and supersession. `memory_suggest` accepts `target: "episode"`, queues the structured fields with `evidence`/`sources`, and approval writes the project or global file. Episode and pattern files join the sync file sets; three parser/scorer fixtures and the episode suites cover the contract.
 - **English-first surface.** The host locale defaults to English (an explicit `zh` still wins; `auto` follows the system locale). `README.md` and `docs/CHANGELOG.md` are now English with `README.zh.md` / `docs/CHANGELOG.zh.md` mirrors, and `npm run check:i18n` enforces the default paths.
 

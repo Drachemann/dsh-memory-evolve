@@ -20,6 +20,7 @@ import { useCallback, useEffect, useState } from 'react'
 import type { ConvViewProps } from '@deepseek-ai/dsh-client-ui-conversation/client'
 import type { Translate } from '@deepseek-ai/dsh-client-ui-slots'
 import { MemoryQueueView } from './MemoryQueueView.tsx'
+import { FlowsView } from './FlowsView.tsx'
 import { TabGuideView, type GuideSection } from './TabGuideView.tsx'
 
 /**
@@ -27,7 +28,7 @@ import { TabGuideView, type GuideSection } from './TabGuideView.tsx'
  * 整体指南与运行时配置已抽到「Memory Evolve 设置」Tab（SettingsTabView）；
  * 本 Tab 的「指南」是记忆功能自己的详细介绍（非整体简介）。
  */
-type TabFeature = 'guide' | 'suggestions'
+type TabFeature = 'guide' | 'suggestions' | 'flows'
 
 /** One memory-file row from the host. */
 interface MemoryFileRow {
@@ -593,6 +594,15 @@ export function MemoryTabView(props: ConvViewProps & MemoryTabViewProps): JSX.El
           {t('memoryTab.feature.suggestions')}
           {badge.suggestions > 0 && <span className="mt-feature-count">{badge.suggestions}</span>}
         </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={feature === 'flows'}
+          className={feature === 'flows' ? 'mt-file-tab mt-file-tab-active' : 'mt-file-tab'}
+          onClick={() => setFeature(feature === 'flows' ? null : 'flows')}
+        >
+          {t('memoryTab.feature.flows')}
+        </button>
         <span className="mt-tab-sep" role="presentation" />
         {files !== null && (files ?? []).map((row) => (
           <button
@@ -620,13 +630,22 @@ export function MemoryTabView(props: ConvViewProps & MemoryTabViewProps): JSX.El
           // 记忆专属指南：详细介绍记忆 Tab 自己的功能（五轨/文件页签/分支/
           // 编辑维护/待确认建议机制）。整体插件指南在「Memory Evolve 设置」Tab。
           <TabGuideView sections={memoryGuideSections(t)} />
-        ) : (
+        ) : feature === 'suggestions' ? (
           <MemoryQueueView
             t={t}
             feature="suggestions"
             onChanged={() => {
               // 队列变更后：刷新本组件计数，并通知宿主层（index.ts）
               // 立即重查 badge，让会话页标签的小红点即时更新（不等 30s 轮询）。
+              pollBadge()
+              window.dispatchEvent(new CustomEvent('dsh-memory-evolve:badge-change'))
+            }}
+          />
+        ) : (
+          <FlowsView
+            sessionId={sessionId}
+            t={t}
+            onChanged={() => {
               pollBadge()
               window.dispatchEvent(new CustomEvent('dsh-memory-evolve:badge-change'))
             }}

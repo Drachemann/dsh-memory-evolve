@@ -8,6 +8,7 @@
 
 ### 新增
 
+- **Flows（流程）管理界面。** 记忆 Tab 新增「流程」子页签，由 `GET /api/flows` 提供全局/项目 episode、pattern、待确认建议与索引状态。支持项目/分支/pattern/置信度筛选与可移除 chips、主从详情（History / Why recalled）、待确认建议的编辑/采纳/拒绝、已确认流程的修订（supersede）与归档到 `EPISODES-archive.md`，并覆盖 loading/empty/error/partial 状态与可折叠的索引脚注。客户端已重新构建；917 项测试通过。
 - **episode 记忆后端。** `EPISODES.md` 沿用现有条目格式并新增 `episode` target；`lib/episodes.js` 负责解析、校验、`sha256(pattern + "\n" + normalize(goal))` 去重键、200 条归档上限与 supersede。`memory_suggest` 支持 `target: "episode"`，以待确认队列保存结构化字段与 `evidence`/`sources`，确认后写入项目或全局文件。episode/pattern 文件加入同步文件集；三个解析/打分 fixture 和 episode 测试覆盖契约。
 - **英文默认界面。** Host 语言默认英文（显式 `zh` 仍优先；`auto` 跟随系统语言）。`README.md` 与 `docs/CHANGELOG.md` 改为英文，中文保留为 `README.zh.md` / `docs/CHANGELOG.zh.md`，`npm run check:i18n` 校验默认路径。
 
